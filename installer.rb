@@ -148,6 +148,32 @@ tasks << Task.new('Check Ruby version',
                   lam)
 
 lam = lambda do
+  req_gem = 'rsolr'
+  print_command req_gem
+  begin
+    require req_gem
+    found = true
+  rescue LoadError
+    found = false
+  end
+  print_status found
+
+  unless found
+    puts
+    puts "  No worries. Trying to install #{req_gem}..."
+    puts
+    puts "  If the following command fails, it's probably because you cannot"
+    puts "  install gems with your user credentials. If that happens, run"
+    puts "  the command again with sudo and then restart the installer."
+    command "gem install #{req_gem}", "Install missing gem '#{req_gem}'"
+  end
+  true
+end
+tasks << Task.new('Check Ruby gems',
+                  'This stage will check the required gems are installed.',
+                  lam)
+
+lam = lambda do
   req_binaries = { 'git' => 'Git',
     'mvn' => 'Apache Maven',
     'rake' => 'Rake (Ruby gem)',
