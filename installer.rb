@@ -206,9 +206,18 @@ lam = lambda do
   else
     command "tar xfz #{annis_service_tar}", 'Unpack annis-service installation package'
     FileUtils.cd annis_service_dir
-    ENV['ANNIS_HOME'] = FileUtils.pwd
+    ENV['ANNIS_HOME'] = Dir.pwd
     command 'bin/annis-service-no-security.sh start', 'Start annis-service'
     FileUtils.cd '..'
+    settings_file = 'settings.sh'
+    unless File.exist? settings_file
+      File.open(settings_file, 'w') do |file|
+        file.puts "export ANNIS_HOME=#{ENV['ANNIS_HOME']}"
+        file.puts "export PATH=$PATH:$ANNIS_HOME/bin"
+      end
+      puts "Run 'source #{settings_file}' before using ANNIS service and admin scripts."
+      puts "Alternatively, copy its contents into ~/.profile."
+    end
   end
   true
 end
