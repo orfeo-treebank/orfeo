@@ -9,9 +9,10 @@
 require 'colorize'
 require 'fileutils'
 require 'open3'
+require 'yaml'
 
 # Execute a shell command. Show it and the resulting status to the
-# user. Return success (boolean) and full output of command as string.
+# user. Return full output of command as array of lines.
 def command(cmd, story = nil)
   if story
     puts
@@ -38,6 +39,7 @@ def command(cmd, story = nil)
   end
   puts unless output.empty?
   abort unless ok
+  return output
 end
 
 def print_command(cmd)
@@ -119,7 +121,7 @@ def show_progress(tasks)
   tasks.each_with_index do |task, i|
     check = task.done? ? '✔' : '☐'
     puts "#{check} #{i+1}. #{task.title}"
-  end  
+  end
   puts
 end
 
@@ -229,6 +231,19 @@ lam = lambda do
   FileUtils.cd '..'
 
   git_get 'https://github.com/orfeo-treebank/orfeo-importer', 'orfeo-importer'
+  puts "You can now set some default values. These are useful but not mandatory at this stage."
+  puts "If unsure, leave the parameter empty."
+  args = {}
+  print "Enter base URL of ANNIS: "
+  input = gets.chomp
+  args[:annis] = input unless input.empty?
+  print "Enter base URL where the sample pages are hosted: "
+  input = gets.chomp
+  args[:samples] = input unless input.empty?
+  unless args.empty?
+    File.open('settings.yaml', 'w') {|f| f.write args.to_yaml }
+  end
+  FileUtils.cd '..'
   true
 end
 tasks << Task.new('Install importer',
