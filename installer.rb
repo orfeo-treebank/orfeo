@@ -74,15 +74,20 @@ end
 
 # If dir doesn't exist, get from the given git repository by
 # cloning. If it does, only apply updates from git.  After the method,
-# the current directory will be 'dir'.
+# the current directory will be 'dir'. Returns true if something has
+# been updated.
 def git_get(url, dir)
   if File.directory? dir
     FileUtils.cd dir
-    command "git pull", "Update the existing git files in #{dir}"
+    out = command "git pull", "Update the existing git files in #{dir}"
+    if (!out.empty?) && out[0] =~ /Already up-to-date/
+      return false
+    end
   else
     command "git clone #{url} #{dir}", "Download files from #{url} to directory #{dir}"
     FileUtils.cd dir
   end
+  true
 end
 
 def explain(heading)
@@ -193,8 +198,12 @@ tasks << Task.new('Check installed binaries',
                   lam)
 
 lam = lambda do
-  git_get 'https://github.com/orfeo-treebank/ANNIS.git', 'ANNIS'
-  command "mvn install", "Build ANNIS from sources"
+  upd = git_get 'https://github.com/orfeo-treebank/ANNIS.git', 'ANNIS'
+  if upd
+    command "mvn install", "Build ANNIS from sources"
+  else
+    puts "Skipping Maven since nothing has been updated"
+  end
   FileUtils.cd '..'
 
   annis_service_tar = Dir.glob 'ANNIS/annis-service/target/*.tar.gz'
@@ -226,8 +235,12 @@ end
 tasks << Task.new('Install ANNIS', 'Now we will try to install ANNIS.', lam)
 
 lam = lambda do
-  git_get 'https://github.com/orfeo-treebank/orfeo-metadata.git', 'orfeo-metadata'
-  command "rake install", "Ensure the metadata module is installed"
+  upd = git_get 'https://github.com/orfeo-treebank/orfeo-metadata.git', 'orfeo-metadata'
+  if upd
+    command "rake install", "Ensure the metadata module is installed"
+  else
+    puts "Skipping rake since nothing has been updated"
+  end
   FileUtils.cd '..'
 
   git_get 'https://github.com/orfeo-treebank/orfeo-importer', 'orfeo-importer'

@@ -12,5 +12,9 @@ possible, installation of the complete set of tools on a system.
 You probably need to be running a Unix system (e.g. Linux). You
 definitely need to have Ruby installed.
 
-Get the file [installer.rb](installer.rb) and execute it. Read the
-output carefully.
+Get the file [installer.rb](installer.rb) and execute it (as a normal
+user, never with root privileges). Read the output carefully.
+
+The installer is relatively safe in the sense that it will only modify
+files under the directory it is executed in. (It may also install Ruby
+gems.)
