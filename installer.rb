@@ -6,10 +6,37 @@
 # reason, you can re-run the script again after fixing the issue (in
 # the same directory).
 
-require 'colorize'
 require 'fileutils'
 require 'open3'
 require 'yaml'
+
+# Add some simple colour codes to the string class to avoid
+# a dependency on another gem such as 'colorize'.
+class String
+  def colorize(color_code)
+    "\e[#{color_code}m#{self}\e[0m"
+  end
+
+  def red
+    colorize(31)
+  end
+  def green
+    colorize(32)
+  end
+  def yellow
+    colorize(33)
+  end
+  def bg_blue
+    colorize(44)
+  end
+  def grey
+    colorize(37)
+  end
+  def light_blue
+    colorize('1;34')
+  end
+end
+
 
 # Execute a shell command. Show it and the resulting status to the
 # user. Return full output of command as array of lines.
@@ -35,7 +62,7 @@ def command(cmd, story = nil)
     output.each{ |x| puts "    #{x}" }
   else
     output[0..cutoff_lines].each{ |x| puts "    #{x}" }
-    puts "    ...#{output.size - cutoff_lines} lines omitted...".colorize(:light_black)
+    puts "    ...#{output.size - cutoff_lines} lines omitted...".grey
   end
   puts unless output.empty?
   abort unless ok
@@ -43,7 +70,7 @@ def command(cmd, story = nil)
 end
 
 def print_command(cmd)
-  print "  #{cmd}".colorize(:light_yellow)
+  print "  #{cmd}".yellow
   cutoff_chars = 40
   if cmd.length < cutoff_chars
     padding = ' ' * (cutoff_chars - cmd.length)
@@ -54,7 +81,7 @@ def print_command(cmd)
 end
 
 def print_status(status)
-  result = status ? "OK".colorize(:light_blue) : "FAILED".colorize(:red)
+  result = status ? "OK".light_blue : "FAILED".red
   puts "[#{result}]"
 end
 
@@ -91,10 +118,10 @@ def git_get(url, dir)
 end
 
 def explain(heading)
-  puts '--- ' + heading.colorize(:cyan) + ' ---'
+  puts "--- #{heading} ---".bg_blue
   puts
   yield if block_given?
-  puts '(press enter to continue)'.colorize(:green)
+  puts '(press enter to continue)'.green
   input = gets
   abort if input.start_with? 'q'
 end
