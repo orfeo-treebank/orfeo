@@ -184,7 +184,8 @@ tasks << Task.new('Check Ruby version',
 lam = lambda do
   # Sometimes the gem and the package name differ. Here, the key is
   # the package name and the value is the gem name.
-  req_gems = { 'rsolr' => 'rsolr', 'zip' => 'rubyzip' }
+  req_gems = { 'rsolr' => 'rsolr', 'zip' => 'rubyzip',
+    'rake' => 'rake', 'rails' => 'rails' }
   req_gems.each do |req_package, req_gem|
     print_command req_gem
     begin
@@ -212,9 +213,8 @@ tasks << Task.new('Check Ruby gems',
 
 lam = lambda do
   req_binaries = { 'git' => 'Git',
-    'mvn' => 'Apache Maven',
-    'rake' => 'Rake (Ruby gem)',
-    'rails' => 'Ruby on Rails' }
+    'javac' => 'Java Development Kit',
+    'mvn' => 'Apache Maven' }
   puts "  Check for required binaries:"
   req_binaries.each do |bin, desc|
     print_command bin
