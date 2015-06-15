@@ -279,10 +279,10 @@ lam = lambda do
   args = {}
   print "Enter base URL of ANNIS: "
   input = gets.chomp
-  args[:annis] = input unless input.empty?
+  args[:annis_url] = input unless input.empty?
   print "Enter base URL where the sample pages are hosted: "
   input = gets.chomp
-  args[:samples] = input unless input.empty?
+  args[:samples_url] = input unless input.empty?
   # TODO: Use something like readline to allow user to edit this.
   # For now, just put the default value in for Solr.
   args[:solr] = 'http://localhost:8983/solr/blacklight-core'
