@@ -185,7 +185,7 @@ lam = lambda do
   # Sometimes the gem and the package name differ. Here, the key is
   # the package name and the value is the gem name.
   req_gems = { 'rsolr' => 'rsolr', 'zip' => 'rubyzip',
-    'rake' => 'rake', 'rails' => 'rails' }
+    'bundler' => 'bundler', 'rake' => 'rake' }
   req_gems.each do |req_package, req_gem|
     print_command req_gem
     begin
@@ -267,6 +267,7 @@ tasks << Task.new('Install ANNIS', 'Now we will try to install ANNIS.', lam)
 lam = lambda do
   upd = git_get 'https://github.com/orfeo-treebank/orfeo-metadata.git', 'orfeo-metadata'
   if upd
+    command "bundle install", 'Ensure dependencies are installed'
     command "rake install", "Ensure the metadata module is installed"
   else
     puts "Skipping rake since nothing has been updated"
@@ -294,6 +295,23 @@ lam = lambda do
 end
 tasks << Task.new('Install importer',
                   "We will try to install the Orfeo importer and its dependencies.",
+                  lam)
+
+
+lam = lambda do
+  upd = git_get 'https://github.com/orfeo-treebank/orfeo-search', 'orfeo-search'
+  if upd
+    command "bundle install", 'Ensure dependencies are installed'
+    command "rake db:migrate jetty:stop jetty:clean orfeo:update jetty:start", "Update the search app and restart Jetty"
+  else
+    puts "Skipping rake since nothing has been updated"
+  end
+
+  FileUtils.cd '..'
+  true
+end
+tasks << Task.new('Install search app',
+                  "We will try to install the Orfeo text search app and its dependencies.",
                   lam)
 
 
