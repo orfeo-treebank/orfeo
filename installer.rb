@@ -275,21 +275,6 @@ lam = lambda do
   FileUtils.cd '..'
 
   git_get 'https://github.com/orfeo-treebank/orfeo-importer', 'orfeo-importer'
-  puts "You can now set some default values. These are useful but not mandatory at this stage."
-  puts "If unsure, leave the parameter empty."
-  args = {}
-  print "Enter base URL of ANNIS: "
-  input = gets.chomp
-  args[:annis_url] = input unless input.empty?
-  print "Enter base URL where the sample pages are hosted: "
-  input = gets.chomp
-  args[:samples_url] = input unless input.empty?
-  # TODO: Use something like readline to allow user to edit this.
-  # For now, just put the default value in for Solr.
-  args[:solr] = 'http://localhost:8983/solr/blacklight-core'
-  unless args.empty?
-    File.open('settings.yaml', 'w') {|f| f.write args.to_yaml }
-  end
   FileUtils.cd '..'
   true
 end
@@ -297,12 +282,75 @@ tasks << Task.new('Install importer',
                   "We will try to install the Orfeo importer and its dependencies.",
                   lam)
 
+# This stuff affects both importer and text search, so we have keep track of
+# it outside their respective blocks.
+@args = {}
+@solr_password_changed = false
+
+# Ask for value to put in specific key. Returns true if value was changed.
+def ask(prompt, key)
+  if @args.key? key
+    default = @args[key]
+    default = " (default #{default})" if default
+  end
+  print "#{prompt}#{default}: "
+  input = gets.chomp
+  if input.empty?
+    return false
+  end
+  @args[key] = input
+  true
+end
+
+lam = lambda do
+  settings_file = 'orfeo-importer/settings.yaml'
+
+  if File.exist? settings_file
+    @args = YAML.load_file(settings_file)
+    changed = false
+  else
+    @args = {solr: 'http://localhost:8983/solr/blacklight-core'}
+    changed = true
+  end
+
+  puts 'First, you must specify a password for Solr.'
+  loop do
+    chg = ask 'Enter password to use for Solr', :solr_pwd
+    unless @args[:solr_pwd].empty? || @args[:solr_pwd] =~ /['",\s]/
+      if chg
+        changed = true
+        @solr_password_changed = true
+      end
+      break
+    end
+    puts 'The password must be non-empty and cannot contain commas, quotes or whitespace.'
+  end
+
+  puts "You can now set some default values. These are useful but not mandatory at this stage."
+  puts "If unsure, leave the parameter unchanged."
+
+  changed = true if ask 'Enter base URL of ANNIS', :annis_url
+  changed = true if ask 'Enter base URL where the sample pages are hosted', :samples_url
+  changed = true if ask 'Enter base URL of Solr', :solr
+
+  if changed && !@args.empty?
+    File.open(settings_file, 'w') {|f| f.write @args.to_yaml }
+  end
+end
+tasks << Task.new('Set configuration parameters',
+                  "These parameters affect both the importer and the text search app",
+                  lam)
+
 
 lam = lambda do
   upd = git_get 'https://github.com/orfeo-treebank/orfeo-search', 'orfeo-search'
-  if upd
+  if upd || @solr_password_changed
     command "bundle install", 'Ensure dependencies are installed'
-    command "rake db:migrate jetty:stop jetty:clean orfeo:update jetty:start", "Update the search app and restart Jetty"
+    command "rake db:migrate jetty:stop jetty:clean", "Set up the search app"
+    command "rake jetty:start jetty:stop", "Start and stop Jetty (to refresh webapp directory)"
+    command "rake orfeo:update password=#{@args[:solr_pwd]}", "Set up the metadata model and authentication"
+    command "rake jetty:start", "Restart Jetty"
+    command 'touch tmp/restart.txt', 'Tell Passenger to reload the Ruby app'
   else
     puts "Skipping rake since nothing has been updated"
   end
