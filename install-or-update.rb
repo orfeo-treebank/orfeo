@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 # This is an installer for the Orfeo system. Start it in a directory
-# where you want files to be stored. If installation stops for some
-# reason, you can re-run the script again after fixing the issue (in
-# the same directory).
+# where you want files to be stored. Running the script in a directory
+# where the system is already installed automatically updates the components
+# and allows configuration parameters to be changed.
 
 require 'fileutils'
 require 'open3'
