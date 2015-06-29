@@ -149,6 +149,8 @@ class Task
 end
 
 def show_progress(tasks)
+  puts
+  puts "======================================================"
   puts "Tasks:"
   tasks.each_with_index do |task, i|
     check = task.done? ? '✔' : '☐'
