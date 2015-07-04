@@ -370,7 +370,7 @@ lam = lambda do
     file.puts '#!/bin/sh'
     file.puts
     file.puts "#{ENV['ANNIS_HOME']}/bin/annis-service-no-security.sh restart"
-    file puts "cd #{File.join(Dir.pwd, 'orfeo-search')}"
+    file.puts "cd #{File.join(Dir.pwd, 'orfeo-search')}"
     file.puts 'rake jetty:stop jetty:start'
   end
   File.open('README.txt', 'w') do |file|
