@@ -9,6 +9,7 @@
 require 'fileutils'
 require 'open3'
 require 'yaml'
+require 'etc'
 
 # Add some simple colour codes to the string class to avoid
 # a dependency on another gem such as 'colorize'.
@@ -364,6 +365,36 @@ tasks << Task.new('Install search app',
                   "We will try to install the Orfeo text search app and its dependencies.",
                   lam)
 
+lam = lambda do
+  File.open('restart.sh', 'w') do |file|
+    file.puts '#!/bin/sh'
+    file.puts
+    file.puts "#{ENV['ANNIS_HOME']}/bin/annis-service-no-security.sh restart"
+    file puts "cd #{File.join(Dir.pwd, 'orfeo-search')}"
+    file.puts 'rake jetty:stop jetty:start'
+  end
+  File.open('README.txt', 'w') do |file|
+    file.puts 'Restarting'
+    file.puts
+    file.puts 'The file restart.sh can be used to restart the necessary services, for example'
+    file.puts 'in the case of a reboot. If you want this to be automatic, you should ensure'
+    file.puts 'the script is run at startup time e.g. via /etc/init.d/. It should be executed'
+    file.puts "with the privileges of the current user (#{Etc.getlogin})."
+    file.puts
+    file.puts
+    file.puts 'Deploying ANNIS GUI'
+    file.puts
+    file.puts "Move the generated WAR file to the webapps directory of you servlet container."
+    file.puts "For example, for a typical installation of Tomcat 7:"
+    file.puts "sudo cp #{ENV['ANNIS_HOME']}/annis-gui/target/annis-gui.war /var/lib/tomcat7/webapps/annis.war"
+  end
+  puts "OK. See README.txt for information."
+end
+tasks << Task.new('Create help files',
+                  "Create helper script and readme file.",
+                  lam)
+
+
 
 explain('Welcome to the Orfeo installer') do
   show_progress tasks
@@ -371,7 +402,6 @@ explain('Welcome to the Orfeo installer') do
   puts "Files will be downloaded into the current directory (#{Dir.pwd})."
   puts "Any time you are prompted to press enter, you can instead type 'quit' or just 'q' to terminate the script."
   puts "Note that some steps may take several minutes, so do not lose patience too quickly."
-  puts "NOTE: this script is not yet complete."
 end
 
 
