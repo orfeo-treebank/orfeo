@@ -247,6 +247,7 @@ lam = lambda do
   if File.directory? annis_service_dir
     puts "Directory #{annis_service_dir} exists. It will be left untouched."
     puts "Therefore unpacking the new annis-service and starting it are skipped."
+    ENV['ANNIS_HOME'] = annis_service_dir
   else
     command "tar xfz #{annis_service_tar}", 'Unpack annis-service installation package'
     FileUtils.cd annis_service_dir
