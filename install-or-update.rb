@@ -340,6 +340,7 @@ lam = lambda do
   if changed && !@args.empty?
     File.open(settings_file, 'w') {|f| f.write @args.to_yaml }
   end
+  true
 end
 tasks << Task.new('Set configuration parameters',
                   "These parameters affect both the importer and the text search app",
@@ -390,6 +391,7 @@ lam = lambda do
     file.puts "sudo cp #{ENV['ANNIS_HOME']}/annis-gui/target/annis-gui.war /var/lib/tomcat7/webapps/annis.war"
   end
   puts "OK. See README.txt for information."
+  true
 end
 tasks << Task.new('Create help files',
                   "Create helper script and readme file.",
