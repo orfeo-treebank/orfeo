@@ -1,20 +1,11 @@
-# orfeo
+# Project ORFEO
 
-The orfeo search portal is a set of related tools for importing,
-converting and exploring annotated corpora. It was created within the
-project [ANR ORFEO](http://www.projet-orfeo.fr/).
+The project [ANR ORFEO](http://www.projet-orfeo.fr/) has multiple components. It involves the collection of linguistic data on both spoken and written modern French from a number of sources; harmonisation, alignment and additional annotation of the collected data; long-term storage of the data; and search and exploration. The repositories in this GitHub organisation cover the last point: a search and discovery tool for spoken and written corpora.
 
-This repository contains an installer that automates, to the extent
-possible, installation of the complete set of tools on a system.
+This repository contains documentation on the Orfeo platform on a general level, as well as an installer that automates, to the extent possible, installation of the complete set of tools on a system.
 
-# How to install
+For details, see:
 
-You probably need to be running a Unix system (e.g. Linux). You
-definitely need to have Ruby installed.
-
-Get the file [installer.rb](installer.rb) and execute it (as a normal
-user, never with root privileges). Read the output carefully.
-
-The installer is relatively safe in the sense that it will only modify
-files under the directory it is executed in. (It may also install Ruby
-gems.)
+ * An overview of the [user interface](docs/interface.md).
+ * [Installation instructions](docs/install.md) for the tools.
+ * [Implementation notes](docs/implementation.md).
