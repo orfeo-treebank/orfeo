@@ -28,10 +28,12 @@ The importer looks for files with a known extension (`.macaon`, `.conll`, `.orfe
 
 ## Removing data
 
-To clear up the Solr index completely:
+To clear up the Solr index completely (PASS is the Solr password; it need not match the previous value as it will be set anew):
 
 ```
-rake jetty:stop jetty:clean orfeo:update jetty:start
+rake jetty:stop jetty:clean
+rake orfeo:update password=PASS
+rake jetty:start
 ```
 
 To remove a specific corpus from the ANNIS database (in directory where installer was run):
