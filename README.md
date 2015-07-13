@@ -8,4 +8,5 @@ For details, see:
 
  * An overview of the [user interface](docs/interface.md).
  * [Installation instructions](docs/install.md) for the tools.
+ * How to do typical [administrative tasks](docs/tasks.md).
  * [Implementation notes](docs/implementation.md).

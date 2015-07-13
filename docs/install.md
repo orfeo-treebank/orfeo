@@ -27,16 +27,20 @@ The script should be run as a normal user, never with root privileges. The scrip
 
 In principle, you only need to have Ruby to run the installation script. See below for the suggested Ruby setup. The rest of this document describes steps that may or may not need to be taken, depending on how many of the steps of the installation script succeed without user intervention.
 
-The installer is relatively safe in the sense that it will only modify
-files under the directory it is executed in. (It may also install Ruby
-gems.)
+The installer is relatively safe in the sense that it will only modify files under the directory it is executed in. (It may also install Ruby gems.)
+
+*Troubleshooting*: If your system is missing a javascript runtime compatible with the `execjs` package, you must install one. For example:
+
+```
+apt-get install nodejs
+```
 
 
 ## Ruby
 
 The importer and text search are implemented in Ruby. Thus, the first step is to ensure Ruby is installed. At least version 1.9.3 of the Ruby interpreter is required and a much newer version (2.2.0 is current at the time of writing this) is recommended.
 
-It is possible to install Ruby and other packages in the Ruby ecosystem using the standard package management tools (e.g. `apt-get`). However, often the packages in official repositories are relatively old, which may cause problems. The recommended setup is to use `rbenv` (a helper app that allows several versions of Ruby to be installed and switched, without causing a dependency hell between different library versions) to install Ruby and all Ruby-based packages in the home directory of the user that will own the Orfeo tool installation directory.
+It is possible to install Ruby and other packages in the Ruby ecosystem using the standard package management tools (e.g. `apt-get`). However, often the packages in official repositories are relatively old, which may cause problems (specifically, the packages `ruby-tzinfo` and `bundler` are out of date in the default Ubuntu repository). The recommended setup is to use `rbenv` (a helper app that allows several versions of Ruby to be installed and switched, without causing a dependency hell between different library versions) to install Ruby and all Ruby-based packages in the home directory of the user that will own the Orfeo tool installation directory.
 
 The universal method is install `git` and follow the instructions at [rbenv's GitHub page](https://github.com/sstephenson/rbenv#basic-github-checkout) to install rbenv and ruby-build as a plugin:
 
@@ -61,12 +65,12 @@ rbenv install 2.0.0-p643
 rbenv global 2.0.0-p643
 ```
 
-Note that when the installation script is run, it will attempt to install any missing dependencies, but only with user privileges. Therefore, if Ruby and `gem` are installed in a location not writable by the user (either via `apt-get` or using `rbenv` with a non-default location), all package install attempts by the script will fail and have to be run manually.
+Note that when the installation script is run, it will attempt to install any missing dependencies, but only with user privileges. Therefore, if Ruby gems are installed in a location not writable by the user (either via `apt-get` or using `rbenv` with a non-default location), all package install attempts by the script will fail and have to be run manually.
 
 
 ## Passenger
 
-The above is already enough to run the search site in development mode using WEBrick. For production, the next step is to integrate it with a web server, which we'll assume is Apache. (The web server should be installed and set up before you proceed from this point. Other servers like nginx are also supported but no instructions for those are included here.) So install the Phusion Passenger module:
+Doing the above and running the installer script is already enough to run the search site in development mode using WEBrick. For production, the next step is to integrate it with a web server, which we'll assume is Apache. (The web server should be installed and set up before you proceed from this point. Other servers like nginx are also supported but no instructions for those are included here.) So install the Phusion Passenger module:
 
 ```
 gem install passenger
@@ -122,3 +126,13 @@ source settings.sh
 annis-admin.sh init -u orfeodb -d orfeo -p eazw68bbx4n2 -P cmp6qzyzwfve
 annis-service-no-security.sh restart
 ```
+
+### Installing the ANNIS GUI
+
+Go to the webapps directory of your servlet container (e.g. Tomcat) and do this *after* the install script has been run:
+
+```
+sudo cp ~orfeo/orfeo-installation/ANNIS/annis-gui/target/annis-gui.war annis.war
+```
+
+Instead of `~orfeo/orfeo-installation`, use the directory where the app has been installed.
