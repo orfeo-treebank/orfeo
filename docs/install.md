@@ -29,11 +29,21 @@ In principle, you only need to have Ruby to run the installation script. See bel
 
 The installer is relatively safe in the sense that it will only modify files under the directory it is executed in. (It may also install Ruby gems.)
 
-*Troubleshooting*: If your system is missing a javascript runtime compatible with the `execjs` package, you must install one. For example:
+### Troubleshooting
+
+If your system is missing a javascript runtime compatible with the `execjs` package, you must install one. For example:
 
 ```
 apt-get install nodejs
 ```
+
+### Restarting
+
+The install script creates a script (`restart.sh`) that is used to restart the services needed by the search app (namely, Solr and annis-service). It would be prudent to run it automatically on system restart (e.g. via /etc/init.d/), but the installer script does not do this, sticking with the policy of only modifying files in the installation directory.
+
+The restart script can be run at any time to restart the services, whether they are already running or not.
+
+The install script also creates the file README.txt with some notes on usage.
 
 
 ## Ruby
@@ -129,7 +139,9 @@ annis-service-no-security.sh restart
 
 ### Installing the ANNIS GUI
 
-Go to the webapps directory of your servlet container (e.g. Tomcat) and do this *after* the install script has been run:
+After the install script has been run, the file README.txt contains instructions for this with the correct pathnames. However, here is what is basically entails.
+
+Go to the webapps directory of your servlet container (e.g. Tomcat) and do this:
 
 ```
 sudo cp ~orfeo/orfeo-installation/ANNIS/annis-gui/target/annis-gui.war annis.war

@@ -32,6 +32,7 @@ To clear up the Solr index completely (PASS is the Solr password; it need not ma
 
 ```
 rake jetty:stop jetty:clean
+rake jetty:start jetty:stop    # because the jetty:start task creates some files
 rake orfeo:update password=PASS
 rake jetty:start
 ```
@@ -52,3 +53,14 @@ In the case of sample pages, the directory representing a corpus can simply be d
 After editing the metadata definitions in the `orfeo-metadata` module, run `rake install` within the metadata module to update that gem, then restart Rails. If the change has been pushed into the GitHub repository, re-running the installer script will take care of this automatically.
 
 If the change involves addition or removal of fields or changes to XPath expressions, the import process must be re-run. First clear up Solr, then re-import the data. Both steps are described above.
+
+
+## Stemming
+
+Stemming for French text can be turned on by adding a parameter to the rake task:
+
+```
+rake orfeo:update password=PASS stemming=true
+```
+
+This enables the builtin stemming of Solr for French text, and also enables the use of a stop word list. Note that the stemmer is aggressive and hence makes mistakes (e.g. mapping "gars" and "gare" together). For this reason, the stemming is off by default.
