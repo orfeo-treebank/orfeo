@@ -350,9 +350,19 @@ tasks << Task.new('Set configuration parameters',
 lam = lambda do
   upd = git_get 'https://github.com/orfeo-treebank/orfeo-search', 'orfeo-search'
   if upd || @solr_password_changed
+    puts "If the production search app is deployed in a non-root directory (such as /search),"
+    puts "it is needed for asset path setup. Otherwise leave this blank."
+    ask 'URL path to text search app (if not root)', :orfeo_search_root
+    if args.key? :orfeo_search_root
+      root_dir = "ORFEO_SEARCH_ROOT=#{args[:orfeo_search_root]}"
+    else
+      root_dir = ''
+    end
     command "bundle install", 'Ensure dependencies are installed'
     command "rake db:migrate jetty:stop jetty:clean", "Set up the search app"
     command "rake jetty:start jetty:stop", "Start and stop Jetty (to refresh webapp directory)"
+    command "rake db:migrate RAILS_ENV=production", "Perform migrations for production"
+    command "rake assets:precompile RAILS_ENV=production #{root_dir}", "Precompile assets for production"
     command "rake orfeo:update password=#{@args[:solr_pwd]}", "Set up the metadata model and authentication"
     command "rake jetty:start", "Restart Jetty"
     command 'touch tmp/restart.txt', 'Tell Passenger to reload the Ruby app'
