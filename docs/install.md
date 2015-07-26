@@ -114,6 +114,31 @@ Finally, add the following to your Apache configuration (`/etc/apache2/default-s
 where `/xyz/public` is the directory where the search application is located.
 
 
+## Development and production environments
+
+The README file in the [orfeo-search](https://github.com/orfeo-treebank/orfeo-search) repository describes steps to run it in development mode, while the installation script will set it up to run in production mode. There are some differences between the modes (for example, the language selector on the top right of each page will show every language for which there are translations in development mode, but it only lists production-approved languages in production mode), but the important distinction in deployment is the asset pipeline.
+
+In normal development mode, all assets (for example, css stylesheets and JavaScript files) are fetched as needed. In production, a precompilation stage is used to speed up the process. As an example, the precompilation creates a single JavaScript file containing the content of all the JavaScript files used by the application and compresses it for browsers that are able to download in gzipped format for reduced loading time. Moreover, the precompilation process employs digest naming, i.e. creating a file named for example `application-29f7a424d8b410bc6f4f3e79d434d54a.css` instead of just `application.css`, so that each change can be reflected in a new filename, a necessary step to prevent undesired browser caching of old versions. The precompilation stage also sets some asset paths.
+
+If the application is installed in a directory other than the root (such as /search), that directory must be specified at precompilation time. The installer script will prompt for it when run.
+
+Note that if changes are made to the app's assets, the precompilation stage must be executed again. It is also essential to understand that once precompilation has been done for production, running in development mode on the same server also finds the precompiled files and uses them; hence, precompilation needs to be run again for development. Ideally, the installation script will take care of precompilation completely, but if manual intervention is necessary, there are two key operations.
+
+To remove all precompiled files:
+
+```
+rm -rf public/assets
+```
+
+To precompile files:
+
+```
+rake assets:precompile RAILS_ENV=production ORFEO_SEARCH_ROOT=/search
+```
+
+Omit the parameter `RAILS_ENV` for development mode, and omit the parameter `ORFEO_SEARCH_ROOT` if the application is accessed via the web server's root directory.
+
+
 ## Installing ANNIS
 
 ANNIS is completely dependent on its database and is also specific to its version. Other than that, it is a listener service (daemon) coupled with a Java servlet GUI.
