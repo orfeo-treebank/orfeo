@@ -353,8 +353,8 @@ lam = lambda do
     puts "If the production search app is deployed in a non-root directory (such as /search),"
     puts "it is needed for asset path setup. Otherwise leave this blank."
     ask 'URL path to text search app (if not root)', :orfeo_search_root
-    if args.key? :orfeo_search_root
-      root_dir = "ORFEO_SEARCH_ROOT=#{args[:orfeo_search_root]}"
+    if @args.key? :orfeo_search_root
+      root_dir = "ORFEO_SEARCH_ROOT=#{@args[:orfeo_search_root]}"
     else
       root_dir = ''
     end
