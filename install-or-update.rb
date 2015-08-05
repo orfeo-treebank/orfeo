@@ -350,6 +350,12 @@ tasks << Task.new('Set configuration parameters',
 lam = lambda do
   upd = git_get 'https://github.com/orfeo-treebank/orfeo-search', 'orfeo-search'
   if upd || @solr_password_changed
+    explain 'Solr index will be reset!' do
+      puts 'Changes in the code or settings require that the Solr index be recreated.'
+      puts 'This means that ALL INDEXED DATA WILL BE REMOVED. You will need to index'
+      puts 'everything again afterwards. If you do not want to clear the index at this'
+      puts 'time, quit now (type q).'
+    end
     puts "If the production search app is deployed in a non-root directory (such as /search),"
     puts "it is needed for asset path setup. Otherwise leave this blank."
     ask 'URL path to text search app (if not root)', :orfeo_search_root
