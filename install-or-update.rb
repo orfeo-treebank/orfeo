@@ -272,7 +272,7 @@ lam = lambda do
   upd = git_get 'https://github.com/orfeo-treebank/orfeo-metadata.git', 'orfeo-metadata'
   if upd
     command "bundle install", 'Ensure dependencies are installed'
-    command "rake install", "Ensure the metadata module is installed"
+    command "bundle exec rake install", "Ensure the metadata module is installed"
   else
     puts "Skipping rake since nothing has been updated"
   end
@@ -365,12 +365,12 @@ lam = lambda do
       root_dir = ''
     end
     command "bundle install", 'Ensure dependencies are installed'
-    command "rake db:migrate jetty:stop jetty:clean", "Set up the search app"
-    command "rake jetty:start jetty:stop", "Start and stop Jetty (to refresh webapp directory)"
-    command "rake db:migrate RAILS_ENV=production", "Perform migrations for production"
-    command "rake assets:precompile RAILS_ENV=production #{root_dir}", "Precompile assets for production"
-    command "rake orfeo:update password=#{@args[:solr_pwd]}", "Set up the metadata model and authentication"
-    command "rake jetty:start", "Restart Jetty"
+    command "bundle exec rake db:migrate jetty:stop jetty:clean", "Set up the search app"
+    command "bundle exec rake jetty:start jetty:stop", "Start and stop Jetty (to refresh webapp directory)"
+    command "bundle exec rake db:migrate RAILS_ENV=production", "Perform migrations for production"
+    command "bundle exec rake assets:precompile RAILS_ENV=production #{root_dir}", "Precompile assets for production"
+    command "bundle exec rake orfeo:update password=#{@args[:solr_pwd]}", "Set up the metadata model and authentication"
+    command "bundle exec rake jetty:start", "Restart Jetty"
     command 'touch tmp/restart.txt', 'Tell Passenger to reload the Ruby app'
   else
     puts "Skipping rake since nothing has been updated"
@@ -389,7 +389,7 @@ lam = lambda do
     file.puts
     file.puts "#{ENV['ANNIS_HOME']}/bin/annis-service-no-security.sh restart"
     file.puts "cd #{File.join(Dir.pwd, 'orfeo-search')}"
-    file.puts 'rake jetty:stop jetty:start'
+    file.puts 'bundle exec rake jetty:stop jetty:start'
   end
   File.open('README.txt', 'w') do |file|
     file.puts 'Restarting'
